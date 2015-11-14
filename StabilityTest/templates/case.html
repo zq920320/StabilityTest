@@ -1,0 +1,57 @@
+<link rel="stylesheet" href={{url_for('static', filename='css/amazeui.min.css')}}/>
+<link rel="stylesheet" href={{url_for('static', filename='css/admin.css')}}/>
+
+<script src={{url_for('static', filename='js/jquery.min.js')}}></script>
+<!--<![endif]-->
+<script src={{url_for('static', filename='js/amazeui.min.js')}}></script>
+	<div class="am-dropdown" data-am-dropdown>
+		<button class="am-btn am-btn-primary am-dropdown-toggle" data-am-dropdown-toggle>添加Case <span class="am-icon-caret-down"></span></button>
+		<ul class="am-dropdown-content">
+			<li><a class="addsuite">Suite Page</a></li>
+			<li><a class="addtest">Test Page</a></li>
+		</ul>
+	</div>
+	<div >
+<table class="am-table am-table-bordered am-table-striped am-table-compact">
+	<thead>
+		<tr>
+			<th>测试用例</th>
+			<th>简介</th>
+			<th>创建时间</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for floder in floders%}
+		<tr>
+			<td ><a class="casename" target-data="{{floder}}">{{ floder }}</td>
+			<td>http://amazeui.org</td>
+			<td>2012-10-01</td>
+			<td><form action="/run" method="post" class="am-form">
+<button type="submit" class="am-btn am-btn-primary am-btn-xs">运行</button>
+</form></td>
+		</tr>
+		{%endfor%}
+		
+	</tbody>
+</table>
+</div>
+
+ <script type="text/javascript" charset="utf-8" async defer>
+ $(".casename").on("click" , function(){
+ 	var data = $(this).attr("target-data");
+ 	$("#content").load("/casedetail/"+data);
+})
+ </script>
+  <script type="text/javascript" charset="utf-8" async defer>
+ $(".addtest").on("click" , function(){
+ 	
+ 	$("#content").load("/addtest");
+})
+ </script>
+   <script type="text/javascript" charset="utf-8" async defer>
+ $(".addsuite").on("click" , function(){
+ 	
+ 	$("#content").load("/addsuite");
+})
+ </script>
