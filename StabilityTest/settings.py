@@ -1,8 +1,8 @@
 SECRET_KEY = 'development key'
 DB_IP = 'localhost'
 DB_PORT = 6379
-# FITNESSE_ROOT = '/Users/ZQ/develop/eclipsecode/Stabilitytest/Fitnesse/FitNesseRoot/StabilityTest'
-FITNESSE_ROOT = '/Users/ZQ/develop/eclipsecode/caipiao/Fitnesse/FitNesseRoot/SlimTest'
+FITNESSE_ROOT = '/Users/ZQ/develop/eclipsecode/stability/Fitnesse/FitNesseRoot/'
+# FITNESSE_ROOT = '/Users/ZQ/develop/eclipsecode/caipiao/Fitnesse/FitNesseRoot/SlimTest'
 MYSQL_HOST = 'localhost'
 MYSQL_USERNAME = 'root'
 MYSQL_PWD = 'zq920320'

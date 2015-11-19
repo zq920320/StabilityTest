@@ -1,57 +1,141 @@
 <link rel="stylesheet" href={{url_for('static', filename='css/amazeui.min.css')}}/>
 <link rel="stylesheet" href={{url_for('static', filename='css/admin.css')}}/>
-
+<link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_wiki.css')}}>
+<link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_pages.css')}}>
+<link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_straight.css')}}>
+<link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/wysiwyg.css')}} media="screen">
+<link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/question.mark.css')}}>
+<link rel="wysiwyg.base" href="/">
+<link rel="wysiwyg.stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse.css')}} media="screen">
+<link rel="wysiwyg.stylesheet" type="text/css" href={{url_for('static', filename='css/editor.css')}}>
+<link rel="shortcut icon" type="image/png" href="/files/fitnesse/images/favicon.png">
+<script src={{url_for('static', filename='js/jquery.min.js')}} type="text/javascript"></script>
+<script src={{url_for('static', filename='js/fitnesse.js')}} type="text/javascript"></script>
+<script src={{url_for('static', filename='js/fitnesse_straight.js')}} type="text/javascript"></script>
 <script src={{url_for('static', filename='js/jquery.min.js')}}></script>
 <!--<![endif]-->
 <script src={{url_for('static', filename='js/amazeui.min.js')}}></script>
-	<div class="am-dropdown" data-am-dropdown>
-		<button class="am-btn am-btn-primary am-dropdown-toggle" data-am-dropdown-toggle>添加Case <span class="am-icon-caret-down"></span></button>
-		<ul class="am-dropdown-content">
-			<li><a class="addsuite">Suite Page</a></li>
-			<li><a class="addtest">Test Page</a></li>
-		</ul>
-	</div>
-	<div >
-<table class="am-table am-table-bordered am-table-striped am-table-compact">
-	<thead>
-		<tr>
-			<th>测试用例</th>
-			<th>简介</th>
-			<th>创建时间</th>
-			<th>操作</th>
-		</tr>
-	</thead>
-	<tbody>
-		{%for floder in floders%}
-		<tr>
-			<td ><a class="casename" target-data="{{floder}}">{{ floder }}</td>
-			<td>http://amazeui.org</td>
-			<td>2012-10-01</td>
-			<td><form action="/run" method="post" class="am-form">
-<button type="submit" class="am-btn am-btn-primary am-btn-xs">运行</button>
-</form></td>
-		</tr>
-		{%endfor%}
+<div class="am-dropdown" data-am-dropdown>
+	<button class="am-btn am-btn-primary am-dropdown-toggle" data-am-dropdown-toggle>添加Case <span class="am-icon-caret-down"></span></button>
+	<ul class="am-dropdown-content">
+		<li><a class="addsuite" target-data="{{result['psuiteid']}}">Suite Page</a></li>
 		
-	</tbody>
-</table>
+		<li><a class="addcase"  target-data="{{result['psuiteid']}}">Test Page</a></li>
+	</ul>
 </div>
+<div >
+	<table class="am-table am-table-bordered am-table-striped am-table-compact">
+		<thead>
+			<tr>
+				<th>测试用例</th>
+				<th>简介</th>
+				<th>创建时间</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for floder in result['floders']%}
+			<tr>
+				<td >
+					{%if floder[2]==1 %}
+					{{ floder[1] }}
+					{%else%}
+					<a class="suitename" target-data="{{floder[0]}}">{{ floder[1] }}
+					{%endif%}
+				</td>
+				<td>http://amazeui.org</td>
+				<td>2012-10-01</td>
+				<td>
+					<button type="submit" class="am-btn am-btn-primary am-btn-xs">编辑</button>
+					{%if floder[2]==1%}
+					<button id="delcase" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">删除</button>
+					{%else%}
+					<button id="delsuite" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">删除</button>
+					{%endif%}
+				</td>
+			</tr>
+			{%endfor%}
+			
+		</tbody>
+	</table>
+</div>
+<script type="text/javascript" charset="utf-8" async defer>
+$(".casename").on("click" , function(){
+	var data = $(this).attr("target-data");
+	$("#content").load("/casedetail/"+data);
+})
+</script>
 
- <script type="text/javascript" charset="utf-8" async defer>
- $(".casename").on("click" , function(){
- 	var data = $(this).attr("target-data");
- 	$("#content").load("/casedetail/"+data);
+<script type="text/javascript" charset="utf-8" async defer>
+$(".suitename").on("click" , function(){
+	var data = $(this).attr("target-data");
+	$("#content").load("/cases/"+data);
 })
- </script>
-  <script type="text/javascript" charset="utf-8" async defer>
- $(".addtest").on("click" , function(){
- 	
- 	$("#content").load("/addtest");
+</script>
+
+<script type="text/javascript" charset="utf-8" async defer>
+$("#delcase").on("click" , function(){
+	var caseid = $(this).attr("target-data");
+	alert(caseid)
+	$.post("/delcase",{'caseid':caseid},function(data){
+    if (data=='1'){
+      $("#content").load("/cases");
+    }else{
+      alert('add fail')
+    }
+  })
 })
- </script>
-   <script type="text/javascript" charset="utf-8" async defer>
- $(".addsuite").on("click" , function(){
- 	
- 	$("#content").load("/addsuite");
+</script>
+<script type="text/javascript" charset="utf-8" async defer>
+$("#delsuite").on("click" , function(){
+	var suiteid = $(this).attr("target-data");
+	alert(suiteid)
+	$.post("/delsuite",{'suiteid':suiteid},function(data){
+    if (data=='1'){
+      $("#content").load("/cases");
+    }else{
+      alert('add fail')
+    }
+  })
 })
- </script>
+</script>
+<script type="text/javascript" charset="utf-8" async defer>
+$(".addcase").on("click" , function(){
+	var psuiteid = $(this).attr("target-data");
+	
+	$("#content").load("/addcase/"+psuiteid);
+})
+</script>
+<script type="text/javascript" charset="utf-8" async defer>
+$(".addsuite").on("click" , function(){
+	var psuiteid = $(this).attr("target-data");
+	$("#content").load("/addsuite/"+psuiteid);
+})
+</script>
+<!-- <div class="am-modal am-modal-prompt" tabindex="-1" id="my-prompt">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">添加Test</div>
+		<div class="am-modal-bd">
+			
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-modal-btn" data-am-modal-confirm>提交</span>
+		</div>
+	</div>
+</div>
+<script>
+$(function() {
+$('#doc-prompt-toggle').on('click', function() {
+$('#my-prompt').modal({
+relatedTarget: this,
+onConfirm: function(e) {
+alert('你输入的是：' + e.data || '')
+},
+onCancel: function(e) {
+alert('不想说!');
+}
+});
+});
+});
+</script> -->

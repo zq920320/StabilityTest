@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html>
+
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>New page</title>
@@ -28,20 +27,13 @@
  </head>
  <body class="editPage">
 
-  <header>
-   <a href="/FrontPage" id="art_niche"><span>FitNesse</span></a>
-
-<ul>
-</ul>
-<h1><a href="/StablityTest">StablityTest</a></h1>
+ 
 
 
 
-  </header>
   
     
-  <nav>
-     </nav>
+ 
   
   <article>
    <script src={{url_for('static', filename='js/textinputs_jquery.js')}} type="text/javascript"></script>
@@ -49,41 +41,26 @@
 <script src={{url_for('static', filename='js/WikiFormatter.js')}} type="text/javascript"></script>
 <script src={{url_for('static', filename='js/TemplateInserter.js')}} type="text/javascript"></script>
 
-<form method="post" action="StablityTest" name="f">
- <input type="hidden" name="responder" value="addChild"/>
+<form method="post" name="f">
+ <input type="hidden" id='psuiteid' value="{{psuiteid}}"/>
  <fieldset>
   <label for="pagename">Page name:</label>
   <input type="text" id="pagename" name="pageName" value="" class="wikiword" />
  </fieldset>
-  <input type="hidden" name="pageTemplate" value=".TemplateLibrary.SuitePage"/>
-  <fieldset>
-  <label for="helptext">Help text:</label>
-  <input type="text" id="helptext" name="helpText" value="" />
- </fieldset>
- <fieldset>
-  <label for="suites">Tags:</label>
-  <input type="text" id="suites" title="Separate tags by a comma" name="suites" value="" />
- </fieldset>
+ 
 
- <div id="backingData" class="hidden">
-  <select id="templateMap">
-   <option value=""></option>
-      <option value=".TemplateLibrary.StaticPage">._.StaticPage</option>
-      <option value=".TemplateLibrary.SuitePage">._.SuitePage</option>
-      <option value=".TemplateLibrary.TestPage">._.TestPage</option>
-     </select>
 
- </div>
+
 
 
  <fieldset id="editor">
-  <textarea class="wikitext no_wrap" id="pageContent" name="pageContent" wrap="off">!1 Test suite X
+  <textarea class="wikitext no_wrap" id="pageContent" name="pageContent" wrap="off">
 !contents -R2 -g -p -f -h</textarea>
  </fieldset>
 
  <fieldset id="save_buttons">
-  <input type="submit" name="save" value="Save" accesskey="s"/>
-  <a class="button" href="StablityTest">Cancel</a>
+  <a class="save" name="save" value="Save" accesskey="s">Save</a>
+  <a class="cancel" >Cancel</a>
  </fieldset>
 </form>
 <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/editor.css')}} media="screen">
@@ -141,7 +118,25 @@ $(function () {
 });
 </script>
   </article>
+    <script type="text/javascript" charset="utf-8" async defer>
+$(".cancel").on("click" , function(){
   
+  $("#content").load("/cases");
+})
+</script>
+  <script type="text/javascript" charset="utf-8" async defer>
+$(".save").on("click" , function(){
+    var psuiteid = document.getElementById("psuiteid").value
+  $.post("/addsuite/"+psuiteid,{'pageName':document.getElementById("pagename").value,'pageContent':document.getElementById("pageContent").value},function(data){
+    if (data=='1'){
+      $("#content").load("/cases");
+    }else{
+      alert('add fail')
+    }
+  })
+  // document.f.action='/addtest'
+  // $("#content").load(document.f.submit());
   
- </body>
-</html>
+})
+</script>
+
