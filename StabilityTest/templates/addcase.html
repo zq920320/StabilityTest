@@ -42,10 +42,13 @@
 <form method="post"  name="f">
  <input type="hidden" id='psuiteid' value="{{psuiteid}}"/>
  <fieldset>
-  <label for="pagename">Page name:</label>
+  <label for="pagename">测试用例名称:</label>
   <input type="text" id="pagename" name="pageName" value="" class="wikiword" />
  </fieldset>
-  
+  <fieldset>
+  <label for="intro">简介:</label>
+  <input type="text" id="intro" name="intro" value=""  />
+ </fieldset>
 
 
  <fieldset id="editor">
@@ -122,7 +125,7 @@ $(".cancel").on("click" , function(){
   <script type="text/javascript" charset="utf-8" async defer>
 $(".save").on("click" , function(){
     var psuiteid = document.getElementById("psuiteid").value
-  $.post("/addcase/"+psuiteid,{'pageName':document.getElementById("pagename").value,'pageContent':document.getElementById("pageContent").value},function(data){
+  $.post("/addcase/"+psuiteid,{'pageName':document.getElementById("pagename").value,'pageContent':document.getElementById("pageContent").value,'intro':document.getElementById("intro").value},function(data){
     if (data=='1'){
       $("#content").load("/cases");
     }else{

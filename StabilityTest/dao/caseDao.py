@@ -7,35 +7,41 @@ from StabilityTest.util import fileUtil
 import os
 import time
 
-
-def getcase(psuiteid):
+def getcasebypid(psuiteid):
     cur = mysqlUtil.connectdb()
     resultnum = cur.execute(
-        "select id,casename,casetype from `case` where psuiteid=" + str(psuiteid))
+        "select id,casename,casetype,intro,create_time from `case` where psuiteid=" + str(psuiteid))
     alldata = cur.fetchall()
     return alldata
-
-
+def getcasebyid(id):
+    cur = mysqlUtil.connectdb()
+    resultnum = cur.execute(
+        "select id,casename,casetype,intro,create_time,psuitepath from `case` where id=" + str(id))
+    if resultnum == 1:
+        alldata = cur.fetchall()
+        return alldata
+    else:
+        return 0
 TIMEFORMAT = '%Y-%m-%d %X'
 # 文件类型 1=case 2=suite
 
 
-def addcase(casename, casedata, psuiteid):
+def addcase(casename, casedata, intro,psuiteid):
     cur = mysqlUtil.connectdb()
     # 获取父级路径
+    psuitepath = '/'+casename+'/'
     if psuiteid != 0:
         resultnum = cur .execute(
             "select psuitepath from `case` where id = '" + psuiteid + "'")
         if resultnum == 1:
             alldata = cur.fetchall()
             psuitepath = alldata[0][0] + casename + '/'
-    else:
-        psuitepath = '/'
+        
     # 数据库添加数据 case名称 case数据 父级id 创建时间 类型为case 所在路径
     timestr = time.strftime(TIMEFORMAT, time.localtime())
-    sql = "insert into `stability`.`case` ( `creat_time`, `casename`, `casedata`, `psuiteid`, `casetype`, `psuitepath`) values ('" + \
+    sql = "insert into `stability`.`case` ( `create_time`, `casename`, `casedata`, `psuiteid`, `casetype`, `psuitepath`,`intro`) values ('" + \
         timestr + "', '" + casename + "', '" + casedata + "', '" + \
-        str(psuiteid) + "', '1', '" + psuitepath + "')"
+        str(psuiteid) + "', '1', '" + psuitepath + "','"+intro+"')"
     # sql = "insert into case (casename,casedata,psuiteid,create_time,casetype,psuitepath) VLAUES ('"+casename+"','"+casedata+"',"+str(psuiteid)+",'"+timestr+"',1,'"+psuitepath+"')"
     resultnum = cur.execute(sql)
     if resultnum == 1:
@@ -45,7 +51,7 @@ def addcase(casename, casedata, psuiteid):
         return 0
 
 
-def addsuite(suitename, suitedata, psuiteid):
+def addsuite(suitename, suitedata, psuiteid,intro):
     cur = mysqlUtil.connectdb()
     # 获取父级路径
     if psuiteid != '0':
@@ -58,9 +64,9 @@ def addsuite(suitename, suitedata, psuiteid):
         psuitepath = suitename + '/'
     # 数据库添加数据 case名称 case数据 父级id 创建时间 类型为case 所在路径
     timestr = time.strftime(TIMEFORMAT, time.localtime())
-    sql = "insert into `stability`.`case` ( `creat_time`, `casename`, `casedata`, `psuiteid`, `casetype`, `psuitepath`) values ('" + \
+    sql = "insert into `stability`.`case` ( `create_time`, `casename`, `casedata`, `psuiteid`, `casetype`, `psuitepath`,`intro`) values ('" + \
         timestr + "', '" + suitename + "', '" + suitedata + \
-        "', '" + str(psuiteid) + "', '2', '" + psuitepath + "')"
+        "', '" + str(psuiteid) + "', '2', '" + psuitepath + "','"+intro+"')"
     resultnum = cur.execute(sql)
     if resultnum == 1:
         # 要添加的路径

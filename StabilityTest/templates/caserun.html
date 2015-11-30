@@ -1,3 +1,6 @@
+
+
+
 <link rel="stylesheet" href={{url_for('static', filename='css/amazeui.min.css')}}/>
 <link rel="stylesheet" href={{url_for('static', filename='css/admin.css')}}/>
 <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_wiki.css')}}>
@@ -15,14 +18,7 @@
 <script src={{url_for('static', filename='js/jquery.min.js')}}></script>
 <!--<![endif]-->
 <script src={{url_for('static', filename='js/amazeui.min.js')}}></script>
-<div class="am-dropdown" data-am-dropdown>
-	<button class="am-btn am-btn-primary am-dropdown-toggle" data-am-dropdown-toggle>添加Case <span class="am-icon-caret-down"></span></button>
-	<ul class="am-dropdown-content">
-		<li><a class="addsuite" target-data="{{result['psuiteid']}}">Suite Page</a></li>
-		
-		<li><a class="addcase"  target-data="{{result['psuiteid']}}">Test Page</a></li>
-	</ul>
-</div>
+
 <div >
 	<table class="am-table am-table-bordered am-table-striped am-table-compact">
 		<thead>
@@ -46,13 +42,10 @@
 				<td>{{floder[3]}}</td>
 				<td>{{floder[4]}}</td>
 				<td>
-					<button type="submit" class="am-btn am-btn-primary am-btn-xs">编辑</button>
 					{%if floder[2]==1%}
-					<button id="delcase" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">删除</button>
-					<button id="runcase" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">运行</button>
+					<button class="runcase" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">运行</button>
 					{%else%}
-					<button id="delsuite" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">删除</button>
-					<button  id="runsutie" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">运行</button>
+					<button  class="runsutie" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">运行</button>
 					{%endif%}
 				</td>
 			</tr>
@@ -74,56 +67,13 @@ $(".suitename").on("click" , function(){
 	$("#content").load("/cases/"+data);
 })
 </script>
-
 <script type="text/javascript" charset="utf-8" async defer>
-$("#delcase").on("click" , function(){
-	var caseid = $(this).attr("target-data");
-	alert(caseid)
-	$.post("/delcase",{'caseid':caseid},function(data){
-    if (data=='1'){
-      $("#content").load("/cases");
-    }else{
-      alert('add fail')
-    }
-  })
-})
-</script>
-<script type="text/javascript" charset="utf-8" async defer>
-$("#delsuite").on("click" , function(){
-	var suiteid = $(this).attr("target-data");
-	alert(suiteid)
-	$.post("/delsuite",{'suiteid':suiteid},function(data){
-    if (data=='1'){
-      $("#content").load("/cases");
-    }else{
-      alert('add fail')
-    }
-  })
-})
-</script>
-<script type="text/javascript" charset="utf-8" async defer>
-$(".addcase").on("click" , function(){
-	var psuiteid = $(this).attr("target-data");
-	
-	$("#content").load("/addcase/"+psuiteid);
-})
-</script>
-<script type="text/javascript" charset="utf-8" async defer>
-$(".addsuite").on("click" , function(){
-	var psuiteid = $(this).attr("target-data");
-	$("#content").load("/addsuite/"+psuiteid);
-})
-</script>
-
-<script type="text/javascript" charset="utf-8" async defer>
-$("#runsutie").on("click" , function(){
+$(".runsutie").on("click" , function(){
+	alert("aaa")
 	var data = $(this).attr("target-data");
 	$("#content").load("/runsuite/"+data);
 })
 </script>
-<script type="text/javascript" charset="utf-8" async defer>
-$("#runcase").on("click" , function(){
-	var data = $(this).attr("target-data");
-	$("#content").load("/runcase/"+data);
-})
-</script>
+
+
+

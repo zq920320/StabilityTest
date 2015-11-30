@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from flask import Flask, url_for, g, session
 from flask import render_template
 from flask import request
@@ -10,15 +12,38 @@ from StabilityTest.util import CaseUtil
 from lxml import etree
 
 
-@app.route('/runcase', methods=['GET'])
-def runcase():
-    return render_template('admin-user.html')
-
-
-@app.route('/run', methods=['POST'])
+@app.route('/run', methods=['GET'])
 def run():
-    s = urllib2.urlopen(
-        'http://localhost/StabilityTest.PartnerTest?test&format=xml').read()
+    floders = caseDao.getcasebypid(0)
+    result = {'psuiteid': 0, 'floders': floders}
+    return render_template('caserun.html',result=result)
+
+
+@app.route('/runcase/<id>', methods=['GET'])
+def runcase(id):
+    
+    print id
+    case = caseDao.getcasebyid(id)
+    print case[0][5][:-1]
+    url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?test&format=xml"
+    print url
+    s = urllib2.urlopen(url).read()
+    doc = xml.dom.minidom.parseString(s)
+    nodes = doc.getElementsByTagName("finalCounts")
+    right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
+    wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
+    ignores = nodes[0].getElementsByTagName(
+        "ignores")[0].childNodes[0].nodeValue
+    return "right:" + right + "wrong:" + wrong + "ignores:" + ignores
+
+@app.route('/runsuite/<id>', methods=['GET'])
+def runsuite(id):
+    print id
+    case = caseDao.getcasebyid(id)
+    print case[0][5][:-1]
+    url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?suite&format=xml"
+    print url
+    s = urllib2.urlopen(url).read()
     doc = xml.dom.minidom.parseString(s)
     nodes = doc.getElementsByTagName("finalCounts")
     right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
@@ -30,14 +55,14 @@ def run():
 
 @app.route('/cases', methods=['GET'])
 def getcaseFloder():
-    floders = caseDao.getcase(0)
+    floders = caseDao.getcasebypid(0)
     result = {'psuiteid': 0, 'floders': floders}
     return render_template('case.html', result=result)
 
 
 @app.route('/cases/<suiteid>', methods=['GET'])
 def getsuiteFloder(suiteid):
-    floders = caseDao.getcase(suiteid)
+    floders = caseDao.getcasebypid(suiteid)
     result = {'psuiteid': suiteid, 'floders': floders}
 
     return render_template('case.html', result=result)
@@ -78,7 +103,8 @@ def addtest(psuiteid):
     else:
         pageName = request.form['pageName']
         pageContent = request.form['pageContent']
-        caseDao.addcase(pageName, pageContent, psuiteid)
+        intro = request.form['intro']
+        caseDao.addcase(pageName, pageContent,intro, psuiteid)
         return '1'
 
 
@@ -90,5 +116,6 @@ def addsuite(psuiteid):
         pageName = request.form['pageName']
         pageContent = request.form['pageContent']
         # psuiteid = request.form['psuiteid']
-        caseDao.addsuite(pageName, pageContent, psuiteid)
+        intro = request.form['intro']
+        caseDao.addsuite(pageName, pageContent, psuiteid,intro)
         return '1'
