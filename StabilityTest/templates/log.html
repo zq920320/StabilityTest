@@ -1,0 +1,38 @@
+<div >
+	<table class="am-table am-table-bordered am-table-striped am-table-compact">
+		<thead>
+			<tr>
+				<th>任务id</th>
+				<th>测试用例</th>
+				<th>运行次数</th>
+				<th>开始时间</th>
+				<th>结束时间</th>
+				<th>执行者</th>
+				<th>状态</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for floder in result['floders']%}
+			<tr>
+			<td>{{floder[0]}}</td>
+			<td>{{floder[6]}}</td>
+			<td>{{floder[1]}}</td>
+
+			<td>{{floder[2]}}</td>
+			<td>{{floder[3]}}</td>
+			<td>{{floder[4]}}</td>
+			{%if floder[5]=='1'%}
+			<td>运行完毕</td>
+			{%elif floder[5]=='0'%}
+			<td>运行中</td>
+			{%else%}
+			<td>运行失败</td>
+			{%endif%}
+			</tr>
+			
+			{%endfor%}
+			
+		</tbody>
+	</table>
+</div
+

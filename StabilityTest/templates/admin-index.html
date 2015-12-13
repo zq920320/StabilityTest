@@ -58,7 +58,7 @@
           </li>
           <li><a href="admin-table.html"><span class="am-icon-table"></span> 用户管理</a></li>
           <li><a href="admin-table.html"><span class="am-icon-table"></span> 报表</a></li>
-          <li><a href="admin-table.html"><span class="am-icon-table"></span> 日志</a></li>
+          <li id='logmanager'><a><span class="am-icon-table"></span> 日志</a></li>
           <li><a href="/logout"><span class="am-icon-sign-out"></span> 注销</a></li>
         </ul>
         
@@ -97,6 +97,12 @@ $("#content").load("/run");
  <script type="text/javascript" charset="utf-8" async defer>
  $("#casemanager").on("click" , function(){
  $("#content").load("/cases");
+})
+ </script>
+
+ <script type="text/javascript" charset="utf-8" async defer>
+ $("#logmanager").on("click" , function(){
+ $("#content").load("/log");
 })
  </script>
   <script type="text/javascript" charset="utf-8" async defer>

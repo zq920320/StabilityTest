@@ -4,12 +4,53 @@ from flask import Flask, url_for, g, session
 from flask import render_template
 from flask import request
 import urllib2
+import threading
 import xml.dom.minidom
 from StabilityTest import app
 from StabilityTest.dao import userDao
 from StabilityTest.dao import caseDao
+from StabilityTest.dao import logDao
 from StabilityTest.util import CaseUtil
 from lxml import etree
+import time
+
+
+
+
+def casethread(id):
+    count=10
+    print id
+    case = caseDao.getcasebyid(id)
+    print case[0][5][:-1]
+    url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?test&format=xml"
+    print url
+    rights=0
+    wrongs=0
+    ignores=0
+    dbid = logDao.addlog(id)
+    status = '1'
+    for i in range(count):
+        print i
+        s = urllib2.urlopen(url).read()
+        doc = xml.dom.minidom.parseString(s)
+        nodes = doc.getElementsByTagName("finalCounts")
+        right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
+        rights = rights+int(right)
+        wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
+        wrongs = wrongs+int(wrong)
+        ignore = nodes[0].getElementsByTagName(
+            "ignores")[0].childNodes[0].nodeValue
+        ignores = ignores+int(ignore)
+        logDao.updatelog(dbid)
+        time.sleep(4)
+    if wrongs!=0:
+        status='2'
+    logDao.caseover(dbid,status)
+    result = "right:" + str(rights) + "wrong:" + str(wrongs) + "ignores:" + str(ignores)
+    print result
+    return result
+
+
 
 
 @app.route('/run', methods=['GET'])
@@ -21,49 +62,55 @@ def run():
 
 @app.route('/runcase/<id>', methods=['GET'])
 def runcase(id):
-    
-    print id
-    case = caseDao.getcasebyid(id)
-    print case[0][5][:-1]
-    url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?test&format=xml"
-    print url
-    s = urllib2.urlopen(url).read()
-    doc = xml.dom.minidom.parseString(s)
-    nodes = doc.getElementsByTagName("finalCounts")
-    right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
-    wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
-    ignores = nodes[0].getElementsByTagName(
-        "ignores")[0].childNodes[0].nodeValue
-    return "right:" + right + "wrong:" + wrong + "ignores:" + ignores
-
-@app.route('/runsuite/<id>', methods=['GET'])
+   
+    caset = threading.Thread(target=casethread,args=(id,))
+    caset.setDaemon(True)
+    caset.start()
+    floders = caseDao.getcasebypid(0)
+    result = {'psuiteid': 0, 'floders': floders,'action':'case开始执行，运行结果请在日志列表查看'}
+    return render_template('case.html', result=result)
+@app.route('/runsuite/<id>', methods=['GET','POST'])
 def runsuite(id):
-    print id
-    case = caseDao.getcasebyid(id)
-    print case[0][5][:-1]
-    url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?suite&format=xml"
-    print url
-    s = urllib2.urlopen(url).read()
-    doc = xml.dom.minidom.parseString(s)
-    nodes = doc.getElementsByTagName("finalCounts")
-    right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
-    wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
-    ignores = nodes[0].getElementsByTagName(
-        "ignores")[0].childNodes[0].nodeValue
-    return "right:" + right + "wrong:" + wrong + "ignores:" + ignores
-
+    if request.method == 'GET':
+        print id
+        case = caseDao.getcasebyid(id)
+        print case[0][5][:-1]
+        url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?suite&format=xml"
+        print url
+        s = urllib2.urlopen(url).read()
+        doc = xml.dom.minidom.parseString(s)
+        nodes = doc.getElementsByTagName("finalCounts")
+        right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
+        wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
+        ignores = nodes[0].getElementsByTagName(
+            "ignores")[0].childNodes[0].nodeValue
+        return "right:" + str(right) + "wrong:" + str(wrong) + "ignores:" + str(ignores)
+    else:
+        print id
+        case = caseDao.getcasebyid(id)
+        print case[0][5][:-1]
+        url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?suite&format=xml"
+        print url
+        s = urllib2.urlopen(url).read()
+        doc = xml.dom.minidom.parseString(s)
+        nodes = doc.getElementsByTagName("finalCounts")
+        right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
+        wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
+        ignores = nodes[0].getElementsByTagName(
+            "ignores")[0].childNodes[0].nodeValue
+        return "right:" + str(right) + "wrong:" + str(wrong) + "ignores:" + str(ignores)
 
 @app.route('/cases', methods=['GET'])
 def getcaseFloder():
     floders = caseDao.getcasebypid(0)
-    result = {'psuiteid': 0, 'floders': floders}
+    result = {'psuiteid': 0, 'floders': floders,'action':''}
     return render_template('case.html', result=result)
 
 
 @app.route('/cases/<suiteid>', methods=['GET'])
 def getsuiteFloder(suiteid):
     floders = caseDao.getcasebypid(suiteid)
-    result = {'psuiteid': suiteid, 'floders': floders}
+    result = {'psuiteid': suiteid, 'floders': floders,'action':''}
 
     return render_template('case.html', result=result)
 

@@ -23,6 +23,12 @@
 		<li><a class="addcase"  target-data="{{result['psuiteid']}}">Test Page</a></li>
 	</ul>
 </div>
+{%if result['action']!=''%}
+<div class="am-alert am-alert-success" data-am-alert>
+  <button type="button" class="am-close">&times;</button>
+  <p>{{ result['action'] }}</p>
+</div>
+{%endif%}
 <div >
 	<table class="am-table am-table-bordered am-table-striped am-table-compact">
 		<thead>

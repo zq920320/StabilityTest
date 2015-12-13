@@ -4,5 +4,5 @@ from StabilityTest import app
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-app.config.from_pyfile('settings.py', silent=True,threaded=True)
+app.config.from_pyfile('settings.py', silent=True)
 app.run(debug=True)

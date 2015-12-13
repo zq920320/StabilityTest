@@ -12,7 +12,8 @@ def login(name=None):
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if userDao.getUserPwd(username) == password:
+        user = userDao.getUser(username)
+        if user[2] == password:
             session['logged_in'] = True
             return render_template('admin-index.html')
         else:
