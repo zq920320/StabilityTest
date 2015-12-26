@@ -16,105 +16,95 @@ import time
 
 
 
-
-def casethread(id):
-    count=10
-    print id
-    case = caseDao.getcasebyid(id)
-    print case[0][5][:-1]
-    url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?test&format=xml"
-    print url
+#case运行thread
+def casethread(casetype,id,count,runtime):
     rights=0
     wrongs=0
     ignores=0
     dbid = logDao.addlog(id)
     status = '1'
-    for i in range(count):
-        print i
-        s = urllib2.urlopen(url).read()
-        doc = xml.dom.minidom.parseString(s)
-        nodes = doc.getElementsByTagName("finalCounts")
-        right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
-        rights = rights+int(right)
-        wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
-        wrongs = wrongs+int(wrong)
-        ignore = nodes[0].getElementsByTagName(
-            "ignores")[0].childNodes[0].nodeValue
-        ignores = ignores+int(ignore)
-        logDao.updatelog(dbid)
-        time.sleep(4)
-    if wrongs!=0:
-        status='2'
-    logDao.caseover(dbid,status)
-    result = "right:" + str(rights) + "wrong:" + str(wrongs) + "ignores:" + str(ignores)
-    print result
+    if count!='':
+        case = caseDao.getcasebyid(id)
+        url = "http://"+app.config['FITNESSE_IP']+"/"+case[0][5][:-1].replace('/','.')+"?"+casetype+"&format=xml"
+        for i in range(int(count)):
+            s = urllib2.urlopen(url).read()
+            doc = xml.dom.minidom.parseString(s)
+            nodes = doc.getElementsByTagName("finalCounts")
+            right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
+            rights = rights+int(right)
+            wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
+            wrongs = wrongs+int(wrong)
+            ignore = nodes[0].getElementsByTagName(
+                "ignores")[0].childNodes[0].nodeValue
+            ignores = ignores+int(ignore)
+            logDao.updatelog(dbid)
+        if wrongs!=0:
+            status='2'
+        logDao.caseover(dbid,status)
+        result = "right:" + str(rights) + "wrong:" + str(wrongs) + "ignores:" + str(ignores)
+    else:
+        finishtime=int(time.time())+int(runtime)*60
+        case = caseDao.getcasebyid(id)
+        url = "http://"+app.config['FITNESSE_IP']+"/"+case[0][5][:-1].replace('/','.')+"?"+casetype+"&format=xml"
+        while (finishtime>int(time.time())):
+            s = urllib2.urlopen(url).read()
+            doc = xml.dom.minidom.parseString(s)
+            nodes = doc.getElementsByTagName("finalCounts")
+            right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
+            rights = rights+int(right)
+            wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
+            wrongs = wrongs+int(wrong)
+            ignore = nodes[0].getElementsByTagName(
+                "ignores")[0].childNodes[0].nodeValue
+            ignores = ignores+int(ignore)
+            logDao.updatelog(dbid)
+        if wrongs!=0:
+            status='2'
+        logDao.caseover(dbid,status)
+        result = "right:" + str(rights) + "wrong:" + str(wrongs) + "ignores:" + str(ignores)
     return result
 
 
 
 
-@app.route('/run', methods=['GET'])
-def run():
-    floders = caseDao.getcasebypid(0)
-    result = {'psuiteid': 0, 'floders': floders}
-    return render_template('caserun.html',result=result)
 
-
-@app.route('/runcase/<id>', methods=['GET'])
-def runcase(id):
-   
-    caset = threading.Thread(target=casethread,args=(id,))
+#根据id运行case
+@app.route('/runcase', methods=['POST'])
+def runcase():
+    caseid = request.form['caseid']
+    count = request.form['count']
+    runtime= request.form['time']
+    caset = threading.Thread(target=casethread,args=("test",caseid,count,runtime))
     caset.setDaemon(True)
     caset.start()
-    floders = caseDao.getcasebypid(0)
-    result = {'psuiteid': 0, 'floders': floders,'action':'case开始执行，运行结果请在日志列表查看'}
-    return render_template('case.html', result=result)
-@app.route('/runsuite/<id>', methods=['GET','POST'])
-def runsuite(id):
-    if request.method == 'GET':
-        print id
-        case = caseDao.getcasebyid(id)
-        print case[0][5][:-1]
-        url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?suite&format=xml"
-        print url
-        s = urllib2.urlopen(url).read()
-        doc = xml.dom.minidom.parseString(s)
-        nodes = doc.getElementsByTagName("finalCounts")
-        right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
-        wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
-        ignores = nodes[0].getElementsByTagName(
-            "ignores")[0].childNodes[0].nodeValue
-        return "right:" + str(right) + "wrong:" + str(wrong) + "ignores:" + str(ignores)
-    else:
-        print id
-        case = caseDao.getcasebyid(id)
-        print case[0][5][:-1]
-        url = "http://localhost/"+case[0][5][:-1].replace('/','.')+"?suite&format=xml"
-        print url
-        s = urllib2.urlopen(url).read()
-        doc = xml.dom.minidom.parseString(s)
-        nodes = doc.getElementsByTagName("finalCounts")
-        right = nodes[0].getElementsByTagName("right")[0].childNodes[0].nodeValue
-        wrong = nodes[0].getElementsByTagName("wrong")[0].childNodes[0].nodeValue
-        ignores = nodes[0].getElementsByTagName(
-            "ignores")[0].childNodes[0].nodeValue
-        return "right:" + str(right) + "wrong:" + str(wrong) + "ignores:" + str(ignores)
+    return '1'
 
+#根据id运行suite
+@app.route('/runsuite', methods=['POST'])
+def runsuite():
+    suiteid = request.form['suiteid']
+    count = request.form['count']
+    runtime= request.form['time']
+    caset = threading.Thread(target=casethread,args=("suite",suiteid,count,runtime))
+    caset.setDaemon(True)
+    caset.start()
+    return '1'
+
+#case管理
 @app.route('/cases', methods=['GET'])
 def getcaseFloder():
     floders = caseDao.getcasebypid(0)
     result = {'psuiteid': 0, 'floders': floders,'action':''}
     return render_template('case.html', result=result)
 
-
+#根据suiteid找到其下面的内容
 @app.route('/cases/<suiteid>', methods=['GET'])
 def getsuiteFloder(suiteid):
     floders = caseDao.getcasebypid(suiteid)
     result = {'psuiteid': suiteid, 'floders': floders,'action':''}
-
     return render_template('case.html', result=result)
 
-
+#删除case
 @app.route('/delcase', methods=['POST'])
 def delcase():
     caseid = request.form['caseid']
@@ -122,7 +112,7 @@ def delcase():
     caseDao.delcase(caseids)
     return '1'
 
-
+#删除suite
 @app.route('/delsuite', methods=['POST'])
 def delsuite():
     suiteid = request.form['suiteid']
@@ -130,7 +120,7 @@ def delsuite():
     caseDao.delsuite(suiteids)
     return '1'
 
-
+#显示case详情
 @app.route('/casedetail/<casename>', methods=['GET'])
 def getcasedetail(casename):
     s = urllib2.urlopen('http://localhost:8080/SlimTest.' + casename).read()
@@ -142,7 +132,7 @@ def getcasedetail(casename):
         tables.append(etree.tostring(node))
     return render_template('casedetail.html', tables=tables)
 
-
+#添加case
 @app.route('/addcase/<psuiteid>', methods=['GET', 'POST'])
 def addtest(psuiteid):
     if request.method == 'GET':
@@ -154,7 +144,7 @@ def addtest(psuiteid):
         caseDao.addcase(pageName, pageContent,intro, psuiteid)
         return '1'
 
-
+#添加suite
 @app.route('/addsuite/<psuiteid>', methods=['GET', 'POST'])
 def addsuite(psuiteid):
     if request.method == 'GET':

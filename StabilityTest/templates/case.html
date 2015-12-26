@@ -52,14 +52,60 @@
 				<td>{{floder[3]}}</td>
 				<td>{{floder[4]}}</td>
 				<td>
-					<button type="submit" class="am-btn am-btn-primary am-btn-xs">编辑</button>
+					
 					{%if floder[2]==1%}
+					<button type="editcase" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">编辑</button>
 					<button id="delcase" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">删除</button>
-					<button id="runcase" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">运行</button>
+					<button id="runcaseplan" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">执行计划</button>
+					<div class="am-modal am-modal-prompt" tabindex="-1" id="runcaseplandetail">
+					  <div class="am-modal-dialog">
+					    <div class="am-modal-hd">case执行计划</div>
+					    <div hidden class="am-modal-bd">
+					      
+					      <input type="text" class="am-modal-prompt-input" value="{{floder[0]}}">
+					    </div>
+					    <div class="am-modal-bd">
+					      运行次数
+					      <input type="text" class="am-modal-prompt-input">
+					    </div>
+					    <div class="am-modal-bd">
+					      运行时间(分钟)
+					      <input type="text" class="am-modal-prompt-input">
+					    </div>
+					    <div class="am-modal-footer">
+					      <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+					      <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+					    </div>
+					  </div>
+					</div>
 					{%else%}
+					<button type="editsuite" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">编辑</button>
 					<button id="delsuite" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">删除</button>
-					<button  id="runsutie" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">运行</button>
+					<button  id="runsuiteplan" target-data="{{floder[0]}}" class="am-btn am-btn-primary am-btn-xs">执行计划</button>
+					<div class="am-modal am-modal-prompt" tabindex="-1" id="runsuiteplandetail">
+					  <div class="am-modal-dialog">
+					    <div class="am-modal-hd">Suite执行计划</div>
+					    <div hidden class="am-modal-bd">
+					      
+					      <input type="text" class="am-modal-prompt-input" value="{{floder[0]}}">
+					    </div>
+					    <div class="am-modal-bd">
+					      运行次数
+					      <input type="text" class="am-modal-prompt-input">
+					    </div>
+					    <div class="am-modal-bd">
+					      运行时间(分钟)
+					      <input type="text" class="am-modal-prompt-input">
+					    </div>
+					    <div class="am-modal-footer">
+					      <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+					      <span class="am-modal-btn" data-am-modal-confirm>提交</span>
+					    </div>
+					  </div>
+					</div>
 					{%endif%}
+
+
 				</td>
 			</tr>
 			{%endfor%}
@@ -121,15 +167,45 @@ $(".addsuite").on("click" , function(){
 })
 </script>
 
-<script type="text/javascript" charset="utf-8" async defer>
-$("#runsutie").on("click" , function(){
-	var data = $(this).attr("target-data");
-	$("#content").load("/runsuite/"+data);
-})
+<script>
+$(function() {
+  $('#runcaseplan').on('click', function() {
+    $('#runcaseplandetail').modal({
+      relatedTarget: this,
+      onConfirm: function(e) {
+        $.post("/runcase",{'caseid':e.data[0],'count':e.data[1],'time':e.data[2]},function(data){
+			    if (data=='1'){
+			    	alert('执行成功')
+			      $("#content").load("/cases");
+			    }else{
+			      alert('执行失败')
+			    }
+			  })
+      },
+      onCancel: function(e) {
+      }
+    });
+  });
+});
 </script>
-<script type="text/javascript" charset="utf-8" async defer>
-$("#runcase").on("click" , function(){
-	var data = $(this).attr("target-data");
-	$("#content").load("/runcase/"+data);
-})
+<script>
+$(function() {
+  $('#runsuiteplan').on('click', function() {
+    $('#runsuiteplandetail').modal({
+      relatedTarget: this,
+      onConfirm: function(e) {
+        $.post("/runsuite",{'suiteid':e.data[0],'count':e.data[1],'time':e.data[2]},function(data){
+			    if (data=='1'){
+			    	alert('执行成功')
+			      $("#content").load("/cases");
+			    }else{
+			      alert('执行失败')
+			    }
+			  })
+      },
+      onCancel: function(e) {
+      }
+    });
+  });
+});
 </script>
