@@ -113,3 +113,26 @@ def delcase(caseids):
         fileUtil.delcase(psuitepath)
         cur.execute("delete from `case` where id =" + str(caseid))
     return 1
+
+#统计所有case数量
+def totalcase():
+    cur = mysqlUtil.connectdb()
+    cur.execute("select count(*) from `case` where casetype=1")
+    alldata = cur.fetchall()
+    print alldata
+    print alldata[0][0]
+    return alldata[0][0]
+
+
+#统计新建case数量
+def totalnewcase():
+    cur = mysqlUtil.connectdb()
+    timestr = time.strftime(TIMEFORMAT, time.localtime())
+    oldtimestr = time.strftime(TIMEFORMAT, time.localtime(time.time()-24*60*60))
+    sql = "select count(*) from `case` where `case`.create_time between '"+oldtimestr+"' and '"+timestr+"'"
+    print sql
+    cur.execute(sql)
+    alldata = cur.fetchall()
+    print alldata
+    print alldata[0][0]
+    return alldata[0][0]

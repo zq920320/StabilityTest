@@ -16,7 +16,7 @@ import time
 
 
 
-#case运行thread
+#case运行thread 1通过 2为未通过 0运行中
 def casethread(casetype,id,count,runtime):
     rights=0
     wrongs=0
@@ -102,6 +102,7 @@ def getcaseFloder():
 def getsuiteFloder(suiteid):
     floders = caseDao.getcasebypid(suiteid)
     result = {'psuiteid': suiteid, 'floders': floders,'action':''}
+    print floders
     return render_template('case.html', result=result)
 
 #删除case

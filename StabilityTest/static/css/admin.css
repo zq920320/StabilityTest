@@ -356,3 +356,5 @@ gallery.html css
 .fixed-layout .admin-sidebar.am-active {
   z-index: 1600;
 }
+
+.admin-content{min-height:400px;}

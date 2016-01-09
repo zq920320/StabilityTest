@@ -32,3 +32,22 @@ def getlog():
 	    "select * from `log`")
 	alldata = cur.fetchall()
 	return alldata
+
+
+#统计通过case数量
+def totalaccess():
+    cur = mysqlUtil.connectdb()
+    cur.execute("select count(*) from `log` where status=1")
+    alldata = cur.fetchall()
+    print alldata
+    print alldata[0][0]
+    return alldata[0][0]
+
+#统计失败case数量
+def totalwarn():
+    cur = mysqlUtil.connectdb()
+    cur.execute("select count(*) from `log` where status=2")
+    alldata = cur.fetchall()
+    print alldata
+    print alldata[0][0]
+    return alldata[0][0]
