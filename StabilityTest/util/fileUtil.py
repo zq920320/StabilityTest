@@ -34,12 +34,6 @@ def addcase(suitename, psuitepath, casedata):
     return 1
 
 
-def updatecase(caseid, casename, casedata):
-    return 0
-
-
-def getcase(caseid):
-    return 0
 
 
 def delcase(psuitepath):
@@ -76,12 +70,14 @@ def addsuite(suitename, psuitepath, suitedata):
     return 0
 
 
-def updatesuite(suiteid, suitename, suitedate):
+def updatecase(casepath, casedata):
+    path = app.config['FITNESSE_ROOT'] + casepath
+    fp = open(path + '/content.txt', 'w')
+    fp.write(casedata)
+    fp.close()
     return 0
 
 
-def getsuite(suiteid):
-    return 0
 
 
 def delsuite(psuitepath):

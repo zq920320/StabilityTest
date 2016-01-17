@@ -1,75 +1,93 @@
-
- <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>New page</title>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>New page</title>
     <!--[if lt IE 9]>
-   <script>
+    <script>
     document.createElement('header');
     document.createElement('nav');
     document.createElement('section');
     document.createElement('article');
     document.createElement('footer');
-   </script>
-  <![endif]-->
-  
-  <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_wiki.css')}}>
-  <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_pages.css')}}>
-  <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_straight.css')}}>
-  <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/wysiwyg.css')}} media="screen">
-    <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/question.mark.css')}}>
-  <link rel="wysiwyg.base" href="/">
-  <link rel="wysiwyg.stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse.css')}} media="screen">
-  <link rel="wysiwyg.stylesheet" type="text/css" href={{url_for('static', filename='css/editor.css')}}>
-  <link rel="shortcut icon" type="image/png" href="/files/fitnesse/images/favicon.png">
-  <script src={{url_for('static', filename='js/jquery.min.js')}} type="text/javascript"></script>
-  <script src={{url_for('static', filename='js/fitnesse.js')}} type="text/javascript"></script>
-  <script src={{url_for('static', filename='js/fitnesse_straight.js')}} type="text/javascript"></script>
- </head>
- <body class="editPage">
-
- 
 
 
+    </script>
+    <![endif]-->
 
-  
-    
- 
-  
-  <article>
-   <script src={{url_for('static', filename='js/textinputs_jquery.js')}} type="text/javascript"></script>
-<script src={{url_for('static', filename='js/SpreadsheetTranslator.js')}} type="text/javascript"></script>
-<script src={{url_for('static', filename='js/WikiFormatter.js')}} type="text/javascript"></script>
-<script src={{url_for('static', filename='js/TemplateInserter.js')}} type="text/javascript"></script>
-
-<form method="post" name="f">
- <input type="hidden" id='psuiteid' value="{{psuiteid}}"/>
- <fieldset>
-  <label for="pagename">Suite名称:</label>
-  <input type="text" id="pagename" name="pageName" value="" class="wikiword" />
- </fieldset>
- 
-  <fieldset>
-  <label for="intro">简介:</label>
-  <input type="text" id="intro" name="intro" value=""  />
- </fieldset>
+    <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_wiki.css' )}}>
+    <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_pages.css' )}}>
+    <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse_straight.css' )}}>
+    <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/wysiwyg.css' )}} media="screen">
+    <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/question.mark.css' )}}>
+    <link rel="wysiwyg.base" href="/">
+    <link rel="wysiwyg.stylesheet" type="text/css" href={{url_for('static', filename='css/fitnesse.css' )}}
+          media="screen">
+    <link rel="wysiwyg.stylesheet" type="text/css" href={{url_for('static', filename='css/editor.css' )}}>
+    <link rel="shortcut icon" type="image/png" href="/files/fitnesse/images/favicon.png">
+    <script src={{url_for('static', filename='js/jquery.min.js' )}} type="text/javascript"></script>
+    <script src={{url_for('static', filename='js/fitnesse.js' )}} type="text/javascript"></script>
+    <script src={{url_for('static', filename='js/fitnesse_straight.js' )}} type="text/javascript"></script>
+</head>
+<body class="editPage">
 
 
+<article>
+    <script src={{url_for('static', filename='js/textinputs_jquery.js' )}} type="text/javascript"></script>
+    <script src={{url_for('static', filename='js/SpreadsheetTranslator.js' )}} type="text/javascript"></script>
+    <script src={{url_for('static', filename='js/WikiFormatter.js' )}} type="text/javascript"></script>
+    <script src={{url_for('static', filename='js/TemplateInserter.js' )}} type="text/javascript"></script>
+
+    <form method="post" name="f">
+        {%if result['type']==1%}
+        <input type="hidden" id='psuiteid' value="{{result['data']['psuiteid']}}"/>
+        <fieldset>
+            <label for="pagename">Suite名称:</label>
+            <input type="text" id="pagename" name="pageName" value="" class="wikiword"/>
+        </fieldset>
+
+        <fieldset>
+            <label for="intro">简介:</label>
+            <input type="text" id="intro" name="intro" value=""/>
+        </fieldset>
 
 
- <fieldset id="editor">
+        <fieldset id="editor">
   <textarea class="wikitext no_wrap" id="pageContent" name="pageContent" wrap="off" style="width: 90%;height: 250px;">
 !contents -R2 -g -p -f -h</textarea>
- </fieldset>
+        </fieldset>
 
- <fieldset id="save_buttons">
-  <a class="save" name="save" value="Save" accesskey="s">Save</a>
-  <a class="cancel" >Cancel</a>
- </fieldset>
-</form>
-<link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/editor.css')}} media="screen">
-<script src={{url_for('static', filename='js/wysiwyg.js')}} type="text/javascript"></script>
-<script src={{url_for('static', filename='js/jquery.tagsinput.js')}} type="text/javascript"></script>
-<script type="text/javascript">
+        <fieldset id="save_buttons">
+            <a class="save" name="save" value="Save" accesskey="s">Save</a>
+            <a class="cancel">Cancel</a>
+        </fieldset>
+        {%else%}
+        <input type="hidden" id='suiteid' value="{{result['data']['id']}}"/>
+        <fieldset>
+            <label for="pagename">Suite名称:</label>
+            <input type="text" id="pagename" name="pageName" readonly value="{{result['data']['casename']}}"
+                   class="wikiword"/>
+        </fieldset>
+
+        <fieldset>
+            <label for="intro">简介:</label>
+            <input type="text" id="intro" name="intro" value="{{result['data']['intro']}}"/>
+        </fieldset>
+
+
+        <fieldset id="editor">
+  <textarea class="wikitext no_wrap" id="pageContent" name="pageContent" wrap="off" style="width: 90%;height: 250px;">{{result['data']['casedata']}}
+</textarea>
+        </fieldset>
+
+        <fieldset id="update_buttons">
+            <a class="update" name="update" value="Update" accesskey="s">Update</a>
+            <a class="cancel">Cancel</a>
+        </fieldset>
+        {%endif%}
+    </form>
+    <link rel="stylesheet" type="text/css" href={{url_for('static', filename='css/editor.css' )}} media="screen">
+    <script src={{url_for('static', filename='js/wysiwyg.js' )}} type="text/javascript"></script>
+    <script src={{url_for('static', filename='js/jquery.tagsinput.js' )}} type="text/javascript"></script>
+    <script type="text/javascript">
 $(function () {
 
   var editors = Wysiwyg.initialize();
@@ -119,15 +137,19 @@ $(function () {
       document.f.pageName.focus();
   
 });
-</script>
-  </article>
-    <script type="text/javascript" charset="utf-8" async defer>
+
+
+    </script>
+</article>
+<script type="text/javascript" charset="utf-8" async defer>
 $(".cancel").on("click" , function(){
   
   $("#content").load("/cases");
 })
+
+
 </script>
-  <script type="text/javascript" charset="utf-8" async defer>
+<script type="text/javascript" charset="utf-8" async defer>
 $(".save").on("click" , function(){
     var psuiteid = document.getElementById("psuiteid").value
   $.post("/addsuite/"+psuiteid,{'pageName':document.getElementById("pagename").value,'pageContent':document.getElementById("pageContent").value,'intro':document.getElementById("intro").value},function(data){
@@ -137,9 +159,24 @@ $(".save").on("click" , function(){
       alert('add fail')
     }
   })
-  // document.f.action='/addtest'
-  // $("#content").load(document.f.submit());
-  
+
 })
+
+
 </script>
 
+<script type="text/javascript" charset="utf-8" async defer>
+$(".update").on("click" , function(){
+    var suiteid = document.getElementById("suiteid").value
+  $.post("/updatesuite/"+suiteid,{'pageContent':document.getElementById("pageContent").value,'intro':document.getElementById("intro").value},function(data){
+    if (data=='1'){
+      $("#content").load("/cases");
+    }else{
+      alert('update fail')
+    }
+  })
+
+})
+
+
+</script>
